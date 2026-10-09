@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
 </head><body>
 <title>Mapa de Votos Paulo Bengtson</title>
@@ -126,7 +127,7 @@ select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backgroun
 (function(){
 const CAND={nome:"Paulo Bengtson",numero:"1556",cargo:"Deputado Federal",partido:"MDB"};
 let D=JSON.parse(document.getElementById('dados').textContent);
-const PLANILHA='dados/Paulo_Bengtson_1556_Dep_Federal.xlsx'; // versão do site: caminho da planilha publicada junto
+const PLANILHA='dados/paulo-bengtson-1556-dep-federal.xlsx'; // versão do site: caminho da planilha publicada junto
 const GEO=JSON.parse(document.getElementById('geo').textContent);
 const TERRA=JSON.parse(document.getElementById('terra').textContent);
 const RIOS=JSON.parse(document.getElementById('rios').textContent);
@@ -192,9 +193,10 @@ function go(tab,mun){
 function isDark(){const t=document.documentElement.dataset.theme;return t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);}
 function newMap(id,opts){
   const map=new maplibregl.Map(Object.assign({container:id,attributionControl:false,dragRotate:false,pitchWithRotate:false,touchPitch:false,
-    style:{version:8,sources:{carto:{type:'raster',tileSize:256,attribution:'© OpenStreetMap © CARTO',
-      tiles:['a','b','c','d'].map(s=>`https://${s}.basemaps.cartocdn.com/${isDark()?'dark_all':'rastertiles/voyager'}/{z}/{x}/{y}.png`)}},
-      layers:[{id:'bg',type:'background',paint:{'background-color':css('--map-bg')}},{id:'carto',type:'raster',source:'carto',paint:{'raster-opacity':.9}}]}},opts));
+    style:{version:8,sources:{carto:{type:'raster',tileSize:256,maxzoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png']}},
+      layers:[{id:'bg',type:'background',paint:{'background-color':css('--map-bg')}},{id:'carto',type:'raster',source:'carto',
+        paint:isDark()?{'raster-opacity':.95,'raster-brightness-min':.92,'raster-brightness-max':.12,'raster-saturation':-.75,'raster-contrast':.15}:{'raster-opacity':.95,'raster-saturation':-.2}}]}},opts));
   map.touchZoomRotate.disableRotation();
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-left');
   map.addControl(new maplibregl.AttributionControl({compact:true}));
@@ -366,7 +368,7 @@ function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((ok,ko)=>{c
 function openUpd(){
   const p=$('#upd');p.hidden=false;
   p.innerHTML=`<p><b>Atualizar com a planilha do candidato</b></p>
-   <p class="sub">Envie o arquivo <b>Paulo_Bengtson_1556_Dep_Federal.xlsx</b> com a aba <b>Seções</b> (colunas Município, Zona, Seção, Nº Local, Local de votação, Bairro, Endereço, CEP, Latitude, Longitude, Votos). Latitude e longitude em graus decimais, por exemplo -1.3696 e -48.3792.</p>
+   <p class="sub">Envie o arquivo <b>paulo-bengtson-1556-dep-federal.xlsx</b> com a aba <b>Seções</b> (colunas Município, Zona, Seção, Nº Local, Local de votação, Bairro, Endereço, CEP, Latitude, Longitude, Votos). Latitude e longitude em graus decimais, por exemplo -1.3696 e -48.3792.</p>
    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input type="file" id="f-upd" accept=".xlsx,.xls,.csv"><button class="btn" id="c-upd">Fechar</button></div><div id="r-upd"></div>`;
   $('#c-upd').onclick=()=>{p.hidden=true};
   $('#f-upd').onchange=async e=>{const f=e.target.files[0];if(!f)return;const r=$('#r-upd');r.innerHTML='<p class="sub">Lendo planilha…</p>';
